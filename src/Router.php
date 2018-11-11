@@ -28,7 +28,13 @@ class Router
             throw new \Exception('Could not find any mathing route', 1);
         }
 
-        $route_params = $this->bind($found_match);
+        // Add Request to the callback params
+        $route_params[] = $this->request;
+
+        // Add binded values to the callback params
+        $route_params = array_merge($route_params, $this->bind($found_match));
+    
+        // Trigger the callback and pass the params
         $this->trigger($found_match, array_values($route_params));
     }
 

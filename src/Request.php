@@ -3,9 +3,10 @@
 namespace Interceptor;
 
 use Exception;
+use JsonSerializable;
 
 
-class Request
+class Request implements JsonSerializable
 {
     private $full_url;
 
@@ -30,7 +31,7 @@ class Request
         // Save DATA from Request
         $this->storeParams();
 
-        // Parse Full url and cut query
+        // Parse Full url and trim query
         $this->trimmed_url = explode('?', $this->full_url)[0];
 
         // Explode URL and save in array
@@ -38,6 +39,18 @@ class Request
 
         // Calculate elements count
         $this->params = $this->countElements($this->url_array);
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'full_url' => $this->getUrl(),
+            'trimmed_url' => $this->getTrimmedUrl(),
+            'method'   => $this->getRequestMethod(),
+            'payload'  => $this->dump(),
+            'url_array' => $this->getUrlArray(),
+            'count_params' => $this->params
+        ];
     }
 
     public function getUrl()
@@ -97,7 +110,7 @@ class Request
 
     public function getTrimmedUrl()
     {
-        return $this->trimmedUrl;
+        return $this->trimmed_url;
     }
 
     public function getUrlArray()
