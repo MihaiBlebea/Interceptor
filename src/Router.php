@@ -9,14 +9,30 @@ class Router
 
     public $routes = [];
 
+    public $middlewares = [];
+
 
     public function __construct(Request $request)
     {
         $this->request = $request;
     }
 
+    public function next()
+    {
+        return true;
+    }
+
     public function run()
     {
+        // Run the middlewares
+        foreach($this->middlewares as $middleware)
+        {
+            if(!$middleware(true))
+            {
+                throw new \Exception('Middleware failed to pass $next', 1);
+            }
+        }
+
         if(count($this->routes) === 0)
         {
             throw new \Exception('No route found. You need to add some routes', 1);
@@ -33,7 +49,7 @@ class Router
 
         // Add binded values to the callback params
         $route_params = array_merge($route_params, $this->bind($found_match));
-    
+
         // Trigger the callback and pass the params
         $this->trigger($found_match, array_values($route_params));
     }
@@ -41,6 +57,11 @@ class Router
     public function add(Route $route)
     {
         $this->routes[] = $route;
+    }
+
+    public function before($middleware)
+    {
+        $this->middlewares[] = $middleware;
     }
 
     public function trigger(Route $route, Array $params)
