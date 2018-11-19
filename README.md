@@ -173,3 +173,27 @@ try {
 
 
 ## Request Object
+
+** Get GET or POST params from the request object **
+
+Example:
+
+*** "/users/MihaiBlebea?age=28" ***
+
+```
+$router->add(Route::post('users/:user', function($request, $user) {
+    ...
+    // Get the age from the request: '28'
+    var_dump($request->retrive('age'));
+
+    // OR
+    var_dump($request->dump()['age']);
+
+
+    // Get the username from the request: 'MihaiBlebea'
+    var_dump($request->getUrlArray()[1]);
+
+    // OR
+    var_dump($user);
+}));
+```
