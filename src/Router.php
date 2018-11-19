@@ -2,8 +2,13 @@
 
 namespace Interceptor;
 
+use Interceptor\Interfaces\RouterInterface;
+use Interceptor\Interfaces\RequestInterface;
+use Interceptor\Interfaces\RouteInterface;
+use Interceptor\Interfaces\MiddlewareInterface;
 
-class Router
+
+class Router implements RouterInterface
 {
     private $request;
 
@@ -12,7 +17,7 @@ class Router
     public $middlewares = [];
 
 
-    public function __construct(Request $request)
+    public function __construct(RequestInterface $request)
     {
         $this->request = $request;
     }
@@ -24,10 +29,11 @@ class Router
 
     public function run()
     {
-        // Run the middlewares
+        // Run the global middlewares
         foreach($this->middlewares as $middleware)
         {
-            if(!$middleware(true))
+            // Give request and TRUE as closure params
+            if(!$middleware->run($this->request))
             {
                 throw new \Exception('Middleware failed to pass $next', 1);
             }
@@ -44,6 +50,12 @@ class Router
             throw new \Exception('Could not find any mathing route', 1);
         }
 
+        // Apply route specific middleware
+        if(!$found_match->applyMiddleware($this->request))
+        {
+            throw new \Exception('Middleware failed to pass $next', 1);
+        }
+
         // Add Request to the callback params
         $route_params[] = $this->request;
 
@@ -54,17 +66,21 @@ class Router
         $this->trigger($found_match, array_values($route_params));
     }
 
-    public function add(Route $route)
+    public function add(
+        RouteInterface $route,
+        MiddlewareInterface $middleware = null)
     {
         $this->routes[] = $route;
     }
 
-    public function before($middleware)
+    public function before(MiddlewareInterface $middleware)
     {
         $this->middlewares[] = $middleware;
     }
 
-    public function trigger(Route $route, Array $params)
+    public function trigger(
+        RouteInterface $route,
+        Array $params)
     {
         $route->trigger($params);
     }
@@ -105,7 +121,7 @@ class Router
         }
     }
 
-    public function bind(Route $route)
+    public function bind(RouteInterface $route)
     {
         $route_params = explode('/', $route->getPath());
         $url_params = $this->request->getUrlArray();

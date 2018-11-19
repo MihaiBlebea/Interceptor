@@ -4,9 +4,10 @@ namespace Interceptor;
 
 use Exception;
 use JsonSerializable;
+use Interceptor\Interfaces\RequestInterface;
 
 
-class Request implements JsonSerializable
+class Request implements RequestInterface, JsonSerializable
 {
     private $full_url;
 
@@ -83,8 +84,7 @@ class Request implements JsonSerializable
         $payload = $_POST;
         if(empty($payload))
         {
-            $payload = file_get_contents('php://input');
-            $payload = json_decode($payload);
+            $payload = (array) json_decode(file_get_contents('php://input'));
         }
         return $payload;
     }
@@ -94,12 +94,12 @@ class Request implements JsonSerializable
         return $items = explode("/", $url);
     }
 
-    private function countElements(array $elements)
+    private function countElements(Array $elements)
     {
         return count($elements);
     }
 
-    public function retrive($element)
+    public function retrive(String $element)
     {
         if(array_key_exists($element, $this->payload))
         {
@@ -120,7 +120,7 @@ class Request implements JsonSerializable
 
     public function getMethod()
     {
-        return$this->method;
+        return $this->method;
     }
 
     public function dump()

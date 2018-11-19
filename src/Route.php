@@ -2,8 +2,13 @@
 
 namespace Interceptor;
 
+use Closure;
+use Interceptor\Interfaces\RouteInterface;
+use Interceptor\Interfaces\MiddlewareInterface;
+use Interceptor\Interfaces\RequestInterface;
 
-class Route
+
+class Route implements RouteInterface
 {
     private $path;
 
@@ -12,21 +17,32 @@ class Route
     private $method;
 
 
-    public static function get(String $path, $callback)
+    public static function get(
+        String $path,
+        Closure $callback,
+        MiddlewareInterface $middleware = null)
     {
-        return new static ($path, $callback, 'GET');
+        return new static ($path, $callback, 'GET', $middleware);
     }
 
-    public static function post(String $path, $callback)
+    public static function post(
+        String $path,
+        Closure $callback,
+        MiddlewareInterface $middleware = null)
     {
-        return new static ($path, $callback, 'POST');
+        return new static ($path, $callback, 'POST', $middleware);
     }
 
-    public function __construct(String $path, $callback, String $method = 'GET')
+    public function __construct(
+        String $path,
+        Closure $callback,
+        String $method,
+        MiddlewareInterface $middleware = null)
     {
-        $this->path     = $path;
-        $this->callback = $callback;
-        $this->method   = $method;
+        $this->path       = $path;
+        $this->callback   = $callback;
+        $this->middleware = $middleware;
+        $this->method     = $method;
     }
 
     public function getPath()
@@ -37,6 +53,25 @@ class Route
     public function getMethod()
     {
         return $this->method;
+    }
+
+    public function before(MiddlewareInterface $middleware)
+    {
+        $this->middleware = $middleware;
+    }
+
+    public function applyMiddleware(RequestInterface $request)
+    {
+        if($this->hasMiddleware())
+        {
+            return $this->middleware->run($request);
+        }
+        return true;
+    }
+
+    public function hasMiddleware()
+    {
+        return $this->middleware !== null;
     }
 
     public function trigger($params)

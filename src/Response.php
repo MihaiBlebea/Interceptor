@@ -2,8 +2,10 @@
 
 namespace Interceptor;
 
+use Interceptor\Interfaces\ResponseInterface;
 
-class Response
+
+class Response implements ResponseInterface
 {
     public static function asJson($response)
     {
