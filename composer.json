@@ -21,7 +21,6 @@
     },
     "license": "MIT",
     "require-dev": {
-        "donatj/mock-webserver": "dev-master",
         "phpunit/phpunit": "^7.5@dev"
     }
 }
