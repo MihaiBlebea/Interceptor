@@ -1,8 +1,12 @@
 # Interceptor Router
 
-![PHP Unit Tests](https://img.shields.io/badge/PHP%20Unit%20Tests-Done-brightgreen.svg)
+<!-- ![PHP Unit Tests](https://img.shields.io/badge/PHP%20Unit%20Tests-Done-brightgreen.svg)
 
-![PHP Unit Tests](https://img.shields.io/badge/Latest%20Version-v1.0.2-brightgreen.svg)
+![PHP Unit Tests](https://img.shields.io/badge/Latest%20Version-v1.0.2-brightgreen.svg) -->
+
+| ![PHP Unit Tests](https://img.shields.io/badge/PHP%20Unit%20Tests-Done-brightgreen.svg) | ![PHP Unit Tests](https://img.shields.io/badge/Latest%20Version-v1.0.2-brightgreen.svg) |
+|---|---|
+
 
 ## Install
 
