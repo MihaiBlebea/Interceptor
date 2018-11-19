@@ -2,7 +2,7 @@
 
 ## Install
 
-Run > composer require mihaiblebea/interceptor
+Run **`composer require mihaiblebea/interceptor`**
 
 
 ## Usage
