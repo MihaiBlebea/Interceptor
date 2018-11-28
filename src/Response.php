@@ -15,7 +15,7 @@ class Response implements ResponseInterface
 
     public static function asJson($response)
     {
-        echo json_encode($users);
+        echo json_encode($response);
     }
 
     public static function asNiceJson()
