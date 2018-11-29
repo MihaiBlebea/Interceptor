@@ -9,17 +9,17 @@ interface RouteInterface
 {
     public static function get(
         String $path,
-        Closure $callback,
+        $callback,
         MiddlewareInterface $middleware = null);
 
     public static function post(
         String $path,
-        Closure $callback,
+        $callback,
         MiddlewareInterface $middleware = null);
 
     public function __construct(
         String $path,
-        Closure $callback,
+        $callback,
         String $method,
         MiddlewareInterface $middleware = null);
 

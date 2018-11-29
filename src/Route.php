@@ -19,7 +19,7 @@ class Route implements RouteInterface
 
     public static function get(
         String $path,
-        Closure $callback,
+        $callback,
         MiddlewareInterface $middleware = null)
     {
         return new static ($path, $callback, 'GET', $middleware);
@@ -27,7 +27,7 @@ class Route implements RouteInterface
 
     public static function post(
         String $path,
-        Closure $callback,
+        $callback,
         MiddlewareInterface $middleware = null)
     {
         return new static ($path, $callback, 'POST', $middleware);
@@ -35,10 +35,14 @@ class Route implements RouteInterface
 
     public function __construct(
         String $path,
-        Closure $callback,
+        $callback,
         String $method,
         MiddlewareInterface $middleware = null)
     {
+        if(!is_callable($callback) && !is_string($callback))
+        {
+            throw new \Exception('Callback attribute must be a closure or a string describing a class and method', 1);
+        }
         $this->path       = $path;
         $this->callback   = $callback;
         $this->middleware = $middleware;
@@ -76,6 +80,24 @@ class Route implements RouteInterface
 
     public function trigger($params)
     {
-        return call_user_func_array($this->callback, $params);
+        if(is_callable($this->callback))
+        {
+            return call_user_func_array($this->callback, $params);
+
+        } elseif(is_string($this->callback)) {
+
+            if(strpos($this->callback, '@') == false)
+            {
+                throw new \Exception('String passed as Controller@method is invalid', 1);
+            }
+
+            $callback_parts = explode('@', $this->callback);
+            $class  = new $callback_parts[0]();
+            $method = $callback_parts[1];
+
+            return call_user_func_array(array($class, $method), $params);
+        } else {
+            throw new \Exception('Could not trigger route. You must pass a callback or a controller class', 1);
+        }
     }
 }
