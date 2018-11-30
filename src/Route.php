@@ -80,6 +80,7 @@ class Route implements RouteInterface
 
     public function trigger($params)
     {
+        // Check it the $this->callback is clojure or string containing Controller and method
         if(is_callable($this->callback))
         {
             return call_user_func_array($this->callback, $params);

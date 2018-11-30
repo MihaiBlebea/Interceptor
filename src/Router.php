@@ -16,6 +16,8 @@ class Router implements RouterInterface
 
     public $middlewares = [];
 
+    private $inject_params = [];
+
 
     public function __construct(RequestInterface $request)
     {
@@ -59,11 +61,26 @@ class Router implements RouterInterface
         // Add Request to the callback params
         $route_params[] = $this->request;
 
+
+        // Add injected params to every controller or callback function
+        if(count($this->inject_params) > 0)
+        {
+            foreach($this->inject_params as $inject_param)
+            {
+                $route_params = array_merge($route_params, $inject_param);
+            }
+        }
+
         // Add binded values to the callback params
         $route_params = array_merge($route_params, $this->bind($found_match));
 
         // Trigger the callback and pass the params
         $this->trigger($found_match, array_values($route_params));
+    }
+
+    public function injectInController(...$params)
+    {
+        $this->inject_params[] = $params;
     }
 
     public function add(
